@@ -1,6 +1,42 @@
 const express = require("express");
 const app = express(); // creating express framework instance be invoking it;
 const path = require("path");
+const cors = require("cors");
+
+/*-----------------------------------------------*
+ *                                               *
+ *                  MIDDLEWARES                  *
+ *                                               *
+ *-----------------------------------------------*/
+
+// there are 3 types of middlewares:
+// 3) Third-party middlewares;
+
+// 1) BUILT-IN MIDDLEWARES:
+app.use(express.json()); // for handling json files
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "/public")));
+
+// Cross Origin Resources Sharing
+const whilelist = [
+  "https://www.google.com",
+  "http://127.0.0.1:5000",
+  "http://localhost:5000",
+];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whilelist.indexOf(origin) !== -1 || !origin) callback(null, true);
+    else callback(new Error("Not allowed by CORS"));
+  },
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+// 2) CUSTOM MIDDLEWARES
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 /*-----------------------------------------------*
  *                                               *
@@ -56,9 +92,15 @@ const three = (req, res) => {
 app.get("/chain-of-handlers", [one, two, three]);
 
 // 404 page:
-// * USE method runs for every incoming request:
-app.use((req, res) => {
-  res.status(404).sendFile("/views/404_page.html", { root: __dirname });
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile("/views/404_page.html", { root: __dirname });
+  } else if (req.accepts("json")) {
+    res.json({ error: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
 });
 
 app.listen(5000, () => console.log(`Listening on port 5000`));
