@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express(); // creating express framework instance be invoking it;
+const path = require("path");
 
 /*-----------------------------------------------*
  *                                               *
@@ -18,13 +19,41 @@ app.get("/", (req, res) => {
 
 // sending HTML Files:
 app.get("/brothers", (req, res) => {
-  res.sendFile("./views/brothers.html", { root: __dirname });
+  res.sendFile(path.join(__dirname, "views", "brothers.html"));
 });
 
 // redirection:
 app.get("/my-brothers", (req, res) => {
   res.redirect("/brothers");
 });
+
+// several route-handlers:
+app.get(
+  "/hello",
+  (req, res, next) => {
+    console.log("First Handler Before NEXT");
+    next();
+  },
+  (req, res) => {
+    res.send("Hello World!");
+  }
+);
+
+// CHAIN OF HANDLERS:
+const one = (req, res, next) => {
+  console.log("ONE");
+  next();
+};
+const two = (req, res, next) => {
+  console.log("TWO");
+  next();
+};
+const three = (req, res) => {
+  console.log("THREE");
+  res.send("CHAIN OF HANDLERS!");
+};
+
+app.get("/chain-of-handlers", [one, two, three]);
 
 // 404 page:
 // * USE method runs for every incoming request:
