@@ -15,7 +15,8 @@ const cors = require("cors");
 // 1) BUILT-IN MIDDLEWARES:
 app.use(express.json()); // for handling json files
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "/public")));
+app.use("/", express.static(path.join(__dirname, "/views/images"))); // serving static files
+app.use("/subdir", express.static(path.join(__dirname, "/views/images"))); // serving static files for subdir
 
 // Cross Origin Resources Sharing
 const whilelist = [
@@ -31,6 +32,8 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
+
+app.use("/subdir", require("./Routes")); // ADDING ROUTES;
 
 // 2) CUSTOM MIDDLEWARES
 app.use((req, res, next) => {
