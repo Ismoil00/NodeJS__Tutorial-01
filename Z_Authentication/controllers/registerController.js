@@ -10,6 +10,7 @@ const usersDB = {
   },
 };
 
+// REGISTERATION
 const handleNewUser = async (req, res) => {
   const { user, pwd } = req.body;
 
