@@ -1,5 +1,4 @@
 const express = require("express");
-const registerController = require("./controllers/registerController");
 
 const app = express();
 app.use(express.json());
