@@ -55,7 +55,12 @@ const handleLogin = async (req, res) => {
       usersDB.users
     );
 
-    res.json({ success: `User ${user} is logged in!` });
+    // httpOnly - makes the jwt unavialable in cookie;
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.json({ accessToken }); // we must store this jwt in memory but not in localstorage/coockie;
   } else {
     res.status(401).json({
       message: `The password ${pwd} does not match!`,
